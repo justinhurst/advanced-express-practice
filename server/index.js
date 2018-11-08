@@ -1,12 +1,7 @@
 // required packages
 let express = require("express");
 let bodyParser = require('body-parser');
-
-// load data
-let comments = require("./comments");
-let products = require("./products");
-let vehicles = require("./vehicles");
-let contacts = require("./contacts");
+let mongoose = require("mongoose");
 
 // new express app
 const app = express();
@@ -14,65 +9,36 @@ const app = express();
 // tool to parse 'http message' body
 app.use(bodyParser.json());
 
+// mongoose boilerplate
+mongoose.Promise = global.Promise;
+// mongoose connect to mlab database
+mongoose.connect("mongodb://admin:heyyou11@ds151943.mlab.com:51943/express-practice");
+
 // comments path 
-app.get("/comments",(req,res,next) => {
-    return res.json(comments);
-});
-app.get("/comments/:id",(req,res,next) => {
-    let foundComment = comments.find( (comment) => comment._id == req.params.id );
-    return res.json(foundComment);
-});
-app.post("/comments",(req,res,next) => {
-    req.body._id = comments.length + 1;
-    req.body.postId = 1;
-    comments.push(req.body);
-    return res.json(comments);
-});
-// comment path
-app.get("/comment/:id",(req,res,next) => {
-    let foundComment = comments.find( (comment) => comment._id == req.params.id );
-    return res.json(foundComment);
-});
+let CommentRoutes  = require("./routes/CommentRoutes");
+app.use(CommentRoutes);
 
 // contacts path
-app.get("/contacts",(req,res,next) => {
-    return res.json(contacts);
-});
-app.get("/contacts/:id",(req,res,next) => {
-    let foundContact = contacts.find( (contact) => contact._id == req.params.id );
-    return res.json(foundContact);
-});
-app.post("/contacts",(req,res,next) => {
-    req.body._id = contacts.length + 1;
-    contacts.push(req.body);
-    return res.json(contacts);
-});
-// contact path
-app.get("/contact/:id",(req,res,next) => {
-    let foundContact = contacts.find( (contact) => contact._id == req.params.id );
-    return res.json(foundContact);
-});
+let ContactRoutes  = require("./routes/ContactRoutes");
+app.use(ContactRoutes);
 
 // vehicles path
-app.get("/vehicles",(req,res,next) => {
-    return res.json(vehicles);
-});
-app.get("/vehicles/:id",(req,res,next) => {
-    let foundVehicle = vehicles.find( (vehicle) => vehicle._id == req.params.id );
-    return res.json(foundVehicle);
-});
-app.post("/vehicles",(req,res,next) => {
-    req.body._id = vehicles.length + 1 ;
-    vehicles.push(req.body);
-    return res.json(vehicles);
-});
-// vehicle path
-app.get("/vehicle/:id",(req,res,next) => {
-    let foundVehicle = vehicles.find( (vehicle) => vehicle._id == req.params.id );
-    return res.json(foundVehicle);
-});
+let VehicleRoutes  = require("./routes/VehicleRoutes");
+app.use(VehicleRoutes);
 
 // products path
+let ProductRoutes  = require("./routes/ProductRoutes");
+app.use(ProductRoutes);
+
+// first way we learned how to do these
+// here is that way for reference
+// this is what the files in the routes and controllers directories are doing
+    // storing them in their own directories is more organized
+
+// load data
+// let products = require("./products");
+
+/*
 app.get("/products",(req,res,next) => {
     return res.json(products);
 });
@@ -91,6 +57,7 @@ app.get("/product/:id",(req,res,next) => {
     let foundProduct = products.find( (product) => product._id == req.params.id );
     return res.json(foundProduct);
 });
+*/
 
 // if nothing is found
 app.use((req,res,next) => {

@@ -1,25 +1,32 @@
-let contacts = require("../contacts");
+let ContactModel = require("../models/ContactModel");
 
 module.exports.list =  function list(request, response) {
-    return response.json(contacts);
+    ContactModel.find({}).exec().then(contacts => {
+        return response.json(contacts);
+    })
 }
 module.exports.show =  function show(request, response) {
-    let foundContact = contacts.find( (contact) => contact._id == request.params.id );
-    return response.json(foundContact);
+    ContactModel.findById(request.params.id).exec().then(c => {
+            return response.json(c)
+        });
 }
 module.exports.create =  function create(request, response) {
-    request.body._id = contacts.length + 1;
-    contacts.push(request.body);
-    return response.json(contacts);
+    let contact = new ContactModel( request.body );
+    contact.save();
+    return response.json(contact);
 }
 module.exports.update =  function update(request, response) {
-    let updateContact = contacts.find((contact)=> contact._id == request.params.id);
-    updateContact.superPowered = false;
-    return response.json(contacts);
+    ContactModel.findById(request.params.id).exec().then(c => {
+        c.updated = true;
+        c.save();
+        return response.json(c)
+    });
 }
 module.exports.remove =  function remove(request, response) {
-    let deleteContact = contacts.find((contact)=> contact._id == request.params.id);
-    deleteContact.isActive = false;
-    return response.json(contacts);
+    ContactModel.findById(request.params.id).exec().then(c => {
+        c.active = false;
+        c.save();
+        return response.json(c)
+    });
 }
    

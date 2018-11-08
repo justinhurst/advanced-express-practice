@@ -1,25 +1,32 @@
-let products = require("../products");
+let ProductModel = require("../models/ProductModel");
 
 module.exports.list =  function list(request, response) {
-    return response.json(products);
+    ProductModel.find({}).exec().then(products => {
+        return response.json(products)
+    })
 }
 module.exports.show =  function show(request, response) {
-    let foundProduct = products.find( (product) => product._id == request.params.id );
-    return response.json(foundProduct);
+    ProductModel.findById(request.params.id).exec().then(p => {
+        return response.json(p)
+    });
 }
 module.exports.create =  function create(request, response) {
-    request.body._id = products.length + 1;
-    products.push(request.body);
-    return response.json(products);
+    let product = new ProductModel( request.body );
+    product.save();
+    return response.json(product);
 }
 module.exports.update =  function update(request, response) {
-    let updateProducts = products.find((product)=> product._id == request.params.id);
-    updateVehicle.superPowered = false;
-    return response.json(products);
+    ProductModel.findById(request.params.id).exec().then( p => {
+        p.updated = true;
+        p.save();
+        return response.json(p);
+    });
 }
 module.exports.remove =  function remove(request, response) {
-    let deleteProducts = products.find((product)=> product._id == request.params.id);
-    deleteProduct.isActive = false;
-    return response.json(products);
+    ProductModel.findById(request.params.id).exec().then( p => {
+        p.active = false;
+        p.save();
+        return response.json(p);
+    });
 }
    
